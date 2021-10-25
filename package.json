@@ -1,0 +1,22 @@
+{
+  "name": "netlify-plugin-build-logger",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amar-p6/netlify-build-logger-plugin.git"
+  },
+  "description": "An plugin that logs if a application is successful or fails to DataDog",
+  "keywords": [
+    "netlify",
+    "netlify-plugin",
+    "build",
+    "plugins",
+    "logging"
+  ],
+  "author": "Amar Parmar",
+  "license": "MIT",
+  "dependencies": {
+    "winston": "^3.3.3"
+  }
+}

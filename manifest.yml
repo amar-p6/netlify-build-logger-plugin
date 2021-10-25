@@ -1,0 +1,14 @@
+# manifest.yml
+
+name: netlify-plugin-build-logger
+inputs:
+  - name: logger_type
+    required: true
+    description: the type of logger, options are console and datadog
+    default: "console"
+  - name: logger_env
+    required: true
+    default: "dev"
+  - name: logger_api_key
+    required: false
+    description: If your logger requires a key
