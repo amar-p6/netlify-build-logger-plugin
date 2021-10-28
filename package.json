@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/amar-p6/netlify-build-logger-plugin.git"
   },
+  "bugs": {
+    "url" : "https://github.com/amar-p6/netlify-build-logger-plugin/issues",
+  }
   "description": "An plugin that logs if a application is successful or fails to DataDog",
   "keywords": [
     "netlify",
