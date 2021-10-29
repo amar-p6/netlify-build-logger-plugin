@@ -2,7 +2,7 @@ const createLogger = require('./logger');
 
 module.exports = {
 
-    onEnd: async ({ constants, packageJson }) => {
+    onEnd: async ({ constants, packageJson, error }) => {
         const payload = {
             env: process.env.ENVIRONMENT,
             appName: packageJson.name,
@@ -10,7 +10,11 @@ module.exports = {
         };
 
         const logger = createLogger(process.env.LOGGER_TYPE, process.env.DATADOG_API_KEY, payload);
-        logger.info('Deploy error');
+        if (error) {
+            logger.info(`Deploy error: ${error.shortMessage}`);
+        } else {
+            logger.info(`Deploy success`);
+        }
         await logger.send();
     }
 };

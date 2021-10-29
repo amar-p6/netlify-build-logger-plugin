@@ -1,8 +1,7 @@
-
 module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
     const { createLogger, transports } = require('winston');
-    const { datadogWinston } = require('datadog-winston');
+    const datadogTransport = require('datadog-winston');
 
     const EVENT_SOURCE = 'netlify'
     const EVENT_NAME = 'Netlify Build Notification';
@@ -15,7 +14,7 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
     const transport = [];
     if (loggerType === LOGGER_TYPES.DATA_DOG) {
-        transport.push(new datadogWinston(getDataDogConfig()));
+        transport.push(new datadogTransport(getDataDogConfig()));
     } else {
         transport.push(new transports.Console());
     }
@@ -28,7 +27,11 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
     function getPayLoad() {
         if (loggerType === LOGGER_TYPES.DATA_DOG) {
-            return {};
+            return {
+                evt: {
+                    name: EVENT_NAME
+                }
+            };
         }
 
         return getDefaultPayload();
@@ -46,9 +49,6 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
             apiKey: `${loggerApiKey}`,
             ddsource: EVENT_SOURCE,
             service: payload.appName,
-            evt: {
-                name: EVENT_NAME
-            },
             ddtags: `env:${payload.env}`
         };
     }
