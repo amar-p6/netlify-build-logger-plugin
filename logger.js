@@ -1,8 +1,9 @@
 
 module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
-    const { createLogger, format, transports } = require('winston');
-    const { combine, json, timestamp } = format;
+    const { createLogger, transports } = require('winston');
+    const { datadogWinston } = require('datadog-winston');
+
     const EVENT_SOURCE = 'netlify'
     const EVENT_NAME = 'Netlify Build Notification';
     const LOGGER_MS_TIMEOUT = 500;
@@ -14,14 +15,7 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
     const transport = [];
     if (loggerType === LOGGER_TYPES.DATA_DOG) {
-        const httpTransportOptions = {
-            host: 'http-intake.logs.datadoghq.com',
-            path: `/v1/input/${loggerApiKey}`,
-            json: true,
-            format: combine(timestamp(), json()),
-            ssl: true
-        };
-        transport.push(new transports.Http(httpTransportOptions));
+        transport.push(new datadogWinston(getDataDogConfig()));
     } else {
         transport.push(new transports.Console());
     }
@@ -34,23 +28,10 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
 
     function getPayLoad() {
         if (loggerType === LOGGER_TYPES.DATA_DOG) {
-            return getDataDogPayload();
+            return {};
         }
 
         return getDefaultPayload();
-    }
-
-    function getDataDogPayload() {
-        return {
-            ddsource: EVENT_SOURCE,
-            service: payload.appName,
-            evt: {
-                name: EVENT_NAME
-            },
-            ddtags: [
-                `env:${payload.env}`
-            ]
-        };
     }
 
     function getDefaultPayload() {
@@ -58,6 +39,18 @@ module.exports = function createLogger(loggerType, loggerApiKey, payload) {
             env: payload.env,
             appName: payload.appName
         }
+    }
+
+    function getDataDogConfig() {
+        return {
+            apiKey: `${loggerApiKey}`,
+            ddsource: EVENT_SOURCE,
+            service: payload.appName,
+            evt: {
+                name: EVENT_NAME
+            },
+            ddtags: `env:${payload.env}`
+        };
     }
 
     function send() {
